@@ -1,0 +1,2142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Running to You – Wedding Rush</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Quicksand font -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Quicksand", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #ffeaf3, #fff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+      padding: 16px;
+    }
+
+    .game-container {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ff5b8a;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .lang-toggle button {
+      border: none;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      background: transparent;
+      font-weight: 600;
+      opacity: 0.5;
+      transition: all 0.2s ease;
+    }
+
+    .lang-toggle button.active {
+      background: #ff5b8a;
+      color: #fff;
+      opacity: 1;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .screen {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 12px;
+      border-radius: 16px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    p {
+      margin: 6px 0;
+      line-height: 1.5;
+      font-size: 0.98rem;
+      white-space: pre-line;
+    }
+
+    .btn {
+      margin-top: 12px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #ff5b8a;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 6px 14px rgba(255, 91, 138, 0.35);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+    }
+
+    .btn.secondary {
+      background: #fff;
+      color: #ff5b8a;
+      border: 1px solid #ffd1e1;
+      box-shadow: none;
+      margin-left: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(255, 91, 138, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 10px rgba(255, 91, 138, 0.3);
+    }
+
+    #gameCanvas {
+      border-radius: 16px;
+      background: #ffe5f0;
+      border: 1px solid #ffd4e4;
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 16px 24px 0;
+      font-size: 0.9rem;
+    }
+
+    .hud-box {
+      background: rgba(255,255,255,0.9);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #ffe5f0;
+      color: #ff5b8a;
+      font-weight: 600;
+    }
+
+    footer {
+      font-size: 0.78rem;
+      opacity: 0.7;
+      text-align: center;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .challenge-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.25);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      pointer-events: auto;
+    }
+
+    .challenge-card {
+      max-width: 480px;
+      width: 100%;
+      background: #fff;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.16);
+      text-align: left;
+    }
+
+    .challenge-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      color: #ff5b8a;
+    }
+
+    .challenge-text {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .challenge-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #ffd4e4;
+      resize: vertical;
+      font-size: 0.9rem;
+      margin-top: 4px;
+      outline: none;
+    }
+
+    .challenge-textarea:focus {
+      border-color: #ff5b8a;
+      box-shadow: 0 0 0 2px rgba(255,91,138,0.2);
+    }
+
+    .challenge-error {
+      color: #e03131;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      min-height: 1em;
+    }
+
+    .challenge-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .blessing-toast {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      border-radius: 999px;
+      padding: 6px 16px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      z-index: 8;
+    }
+
+    .blessing-toast span:first-child {
+      font-size: 1rem;
+    }
+
+    .item-toast {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.96);
+      border-radius: 999px;
+      padding: 6px 16px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    .item-toast-icon {
+      font-size: 1rem;
+    }
+
+    .door-toast {
+      position: absolute;
+      left: 50%;
+      top: 40px;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.96);
+      border-radius: 999px;
+      padding: 6px 16px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 8;
+    }
+
+    /* Hint bubble at bottom, above controls */
+    .hint-bubble {
+      position: absolute;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.96);
+      border-radius: 999px;
+      padding: 6px 18px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+      z-index: 5;
+    }
+
+    /* HOW-TO CARD */
+    .howto-card {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff7fb;
+      border: 1px solid #ffd4e4;
+      text-align: left;
+      max-width: 620px;
+    }
+
+    .howto-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ff5b8a;
+      margin-bottom: 8px;
+    }
+
+    .howto-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.86rem;
+    }
+
+    .howto-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .legend-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+    }
+
+    .howto-text {
+      flex: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* TOUCH CONTROLS (for smartphone) */
+    .touch-controls {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 6;
+    }
+
+    .tc-row {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .tc-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #ffb6d1;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #ff5b8a;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .tc-btn:active {
+      background: #ffebf3;
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    @media (max-width: 600px) {
+      .game-container {
+        border-radius: 16px;
+        padding: 16px;
+      }
+      .tc-btn {
+        width: 44px;
+        height: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="game-container">
+  <header>
+    <div>
+      <h1 id="title">Running to You – Wedding Rush</h1>
+      <div class="subtitle" id="subtitle">
+        A slightly chaotic wedding mini-game for Giang &amp; Nhi
+      </div>
+    </div>
+    <div class="lang-toggle">
+      <span>Language:</span>
+      <button id="btn-en" class="active">EN</button>
+      <button id="btn-vi">VI</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Start Screen -->
+    <section class="screen active" id="start-screen">
+      <p id="start-description">
+        It’s almost ceremony time. Giang panicked and dropped stuff everywhere. Nhi is still sleeping. Help him fix it before anyone notices.
+      </p>
+      <div class="button-row">
+        <button class="btn" id="btn-start">Play</button>
+      </div>
+    </section>
+
+    <!-- Story Screen -->
+    <section class="screen" id="story-screen">
+      <p id="story-text">
+        Story will be here...
+      </p>
+
+      <!-- HOW-TO VISUAL GUIDE -->
+      <div class="howto-card hidden" id="howto-card">
+        <div class="howto-title" id="howto-title">
+          Quick visual guide
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="player" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-giang-text">
+            This is Giang (you). Move him around to pick up items.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="cousin" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-cousins-text">
+            These are the cousins. If they touch you, you owe them a love line.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="na" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-na-text">
+            Na the cat. Chase her to get the last item.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="item" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-items-text">
+            Wedding items Giang dropped. Collect them all.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="door" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-door-text">
+            Door to Nhi’s room. Opens only after you get everything.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="room" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-room-text">
+            Nhi’s room. She’s still sleeping here.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="ceremony" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-ceremony-text">
+            Ceremony aisle. Giang &amp; Nhi will walk here together at the end.
+          </div>
+        </div>
+        <div class="howto-row">
+          <div class="howto-icon">
+            <canvas class="legend-icon" data-icon="controls" width="22" height="22"></canvas>
+          </div>
+          <div class="howto-text" id="howto-controls-text">
+            Controls: use the arrow keys on your keyboard.
+          </div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="btn" id="btn-story-next">Next</button>
+      </div>
+    </section>
+
+    <!-- Game Screen -->
+    <section class="screen" id="game-screen" style="position:relative;">
+      <canvas id="gameCanvas" width="608" height="480"></canvas>
+
+      <div class="hud">
+        <div class="hud-box">
+          <span class="badge">♥</span>
+          <span id="hud-score-label">Items:</span>
+          <span id="hud-score">0</span>
+          <span>/</span>
+          <span id="hud-target">0</span>
+        </div>
+      </div>
+
+      <!-- Hint bubble -->
+      <div class="hint-bubble" id="hint-bubble">
+        <span id="hud-hint">Move freely with arrow keys or on-screen buttons. Avoid Kitty, Phúc, Sữa &amp; Trúc.</span>
+      </div>
+
+      <!-- Challenge overlay -->
+      <div class="challenge-overlay" id="challenge-overlay">
+        <div class="challenge-card">
+          <div class="challenge-title" id="challenge-title">
+            Kitty caught you!
+          </div>
+          <div class="challenge-text" id="challenge-text">
+            Type a sweet line to Nhi starting with "Dear Nhi,".
+          </div>
+          <textarea
+            id="challenge-input"
+            class="challenge-textarea"
+            placeholder="Dear Nhi, ..."
+          ></textarea>
+          <div class="challenge-error" id="challenge-error"></div>
+          <div class="challenge-actions">
+            <button class="btn" id="challenge-submit">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blessing toast -->
+      <div class="blessing-toast" id="blessing-toast">
+        <span>✨</span>
+        <span id="blessing-text"></span>
+      </div>
+
+      <!-- Item toast -->
+      <div class="item-toast" id="item-toast">
+        <span class="item-toast-icon" id="item-toast-icon">💍</span>
+        <span id="item-toast-text">Collected: Ring (1 / 6)</span>
+      </div>
+
+      <!-- Door opened toast -->
+      <div class="door-toast" id="door-toast">
+        <span>🚪</span>
+        <span id="door-toast-text">The door to Nhi’s room is now open. Time to wake her (gently).</span>
+      </div>
+
+      <!-- TOUCH CONTROLS -->
+      <div class="touch-controls" id="touch-controls">
+        <div class="tc-row">
+          <button class="tc-btn" data-dir="up">▲</button>
+        </div>
+        <div class="tc-row">
+          <button class="tc-btn" data-dir="left">◀</button>
+          <button class="tc-btn" data-dir="down">▼</button>
+          <button class="tc-btn" data-dir="right">▶</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- End Screen -->
+    <section class="screen" id="end-screen">
+      <p id="end-text">
+        You made it!
+      </p>
+      <div class="button-row">
+        <button class="btn" id="btn-again">Play Again</button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer-text">
+    Made with love (and a bit of chaos) for Giang &amp; Nhi
+  </footer>
+</div>
+
+<script>
+  // --------- Localization strings ----------
+  const STRINGS = {
+    en: {
+      title: "Running to You – Wedding Rush",
+      subtitle: "A slightly chaotic wedding mini-game for Giang & Nhi",
+      startDescription:
+        "Just a few minutes left before the ceremony.\n\nGiang should be calm, dressed and ready to walk to the aisle – but he panics, trips, and his wedding tote quietly rips without him noticing.\n\nAs he walks across the hall, things start falling out one by one:\nring, bouquet, love letter, photo, slice of cake… and his tie.\n\nThe tie gets stolen by Na, the black & white cat, who decides it’s a new toy.\n\nNhi is still fast asleep in her locked room, completely unaware that outside is becoming a soft little chaos.",
+      btnPlay: "Play",
+      story1:
+`Just a few minutes left before the ceremony.
+
+Giang is supposed to be neat, composed,
+and ready to walk straight to the aisle.
+
+Instead, he panics, stumbles,
+and tears a hole in his wedding tote
+without even realising it.
+
+On the way across the hall, their wedding props
+quietly fall out one by one:
+
+the wedding ring, bouquet, love letter,
+a favourite photo, a slice of cake…
+and his tie.
+
+Na, the black-and-white cat,
+grabs the tie and runs off to play with it.
+
+Nhi is still sleeping peacefully
+in her locked room, not knowing
+things outside are getting a bit… messy.`,
+      story2:
+`Your mission:
+
+• Move Giang around the open wedding hall
+  using the arrow keys or the on-screen buttons.
+• Help him pick up all 5 items
+  that fell onto the floor.
+• Chase Na to get his missing tie –
+  that becomes the 6th item.
+• When you have all 6, the door to Nhi’s room unlocks.
+• Step on the door and the game will take over:
+  Giang goes in, gently “wakes” Nhi,
+  and together they walk to the ceremony aisle.
+
+On the way, four playful cousins
+— Kitty, Phúc, Sữa and Trúc —
+keep crossing his path.
+
+If they bump into Giang, the game doesn’t end.
+You just owe them a little love line for Nhi,
+and they’ll bless the couple and let you go.`,
+      btnStoryNext: "Next",
+      btnStoryStart: "Start",
+      hudScoreLabel: "Items:",
+      hudHint: "Move with arrow keys or on-screen buttons. Avoid Kitty, Phúc, Sữa & Trúc.",
+      endWin:
+`Crisis under control.
+
+Giang picked everything up, found Nhi,
+and somehow they still made it to the ceremony.
+
+From the outside it looks smooth and romantic.
+On the inside it was a tiny, funny mess —
+which is probably how real marriage works anyway.
+
+Wishing you both a lifetime of inside jokes,
+small disasters, and walking to the aisle together
+again and again in your own way.`,
+      endLose:
+`Love challenge completed (more or less).
+
+Giang is still jogging around the hall,
+picking up memories one by one.
+
+Because even when things fall apart a little,
+he just keeps going — straight back to Nhi.`,
+      footer: "Made with love (and a bit of chaos) for Giang & Nhi",
+      challengeError: "Write at least a short loving sentence for Nhi, please ♥",
+      challengeButton: "Send",
+      roomLabel: "Nhi's room",
+      ceremonyLabel: "Ceremony aisle",
+      doorOpenedText: "The door to Nhi’s room is now open. Time to wake her (gently).",
+      itemBanner: {
+        ring: "Wedding ring",
+        flower: "Bouquet",
+        letter: "Love letter",
+        photo: "Photo memory",
+        cake: "Wedding cake",
+        key: "Key",
+        naGift: "Giang's tie"
+      },
+      itemStory: {
+        ring: "Somehow it rolled away. Don’t worry, you found it in time.",
+        flower: "It slipped out when Giang spun around a bit too dramatically.",
+        letter: "The note that once made Nhi laugh way too hard.",
+        photo: "Proof of one of their silliest, happiest days.",
+        cake: "A runaway piece of sweetness from the dessert table.",
+        key: "A small thing with big responsibility.",
+        naGift: "Na finally gave the tie back after a fun little chase."
+      },
+      howtoTitle: "Quick visual guide",
+      howtoGiang: "This is Giang (you). Move him around to pick up items.",
+      howtoCousins: "These are the cousins. If they touch you, you owe them a love line.",
+      howtoNa: "Na the black-and-white cat. Chase her to get the last item (the tie).",
+      howtoItems: "Wedding items Giang dropped. Collect them all.",
+      howtoDoor: "Door to Nhi’s room. Opens only after you get all six items.",
+      howtoRoom: "Nhi’s room. She’s still sleeping here.",
+      howtoCeremony: "Ceremony aisle. Giang & Nhi will walk here together at the end.",
+      howtoControls: "Controls: use the arrow keys on your keyboard or tap the on-screen arrows on your phone."
+    },
+    vi: {
+      title: "Chạy về bên em – Wedding Rush",
+      subtitle: "Mini game cưới hơi hỗn loạn dành cho Giang & Nhi",
+      startDescription:
+        "Còn vài phút nữa là tới giờ ra lễ đường.\n\nAnh Giang lẽ ra phải chỉnh tề, sẵn sàng lên lễ đường, nhưng vì quá quýnh nên vấp té, làm túi đồ cưới bị thủng mà không hay.\n\nTrên đường đi ngang sảnh, từng món đồ cưới rơi ra:\nnhẫn cưới, hoa cưới, thư tình, tấm ảnh kỷ niệm, miếng bánh, cà vạt.\n\nCà vạt thì bị con Na tha đi làm đồ chơi.\n\nChị Nhi vẫn đang ngủ ngon trong phòng đã khóa, chưa biết bên ngoài đang hơi… hỗn loạn.",
+      btnPlay: "Bắt đầu",
+      story1:
+`Còn vài phút nữa là tới giờ ra lễ đường.
+
+Anh Giang lẽ ra phải chỉnh tề,
+bình tĩnh chuẩn bị bước lên lễ đường.
+
+Nhưng vì quá quýnh, anh vấp té một cái,
+làm túi đồ cưới bị thủng
+mà chính mình cũng không để ý.
+
+Đi ngang sảnh tiệc,
+từng món đạo cụ dễ thương lần lượt rơi ra:
+
+nhẫn cưới, hoa cưới, thư tình,
+tấm ảnh kỷ niệm, miếng bánh…
+và cả cà vạt.
+
+Cà vạt thì bị con Na
+tha đi làm đồ chơi.
+
+Chị Nhi vẫn đang ngủ ngon trong phòng đã khóa,
+chưa biết bên ngoài mọi thứ đang hơi… hỗn loạn.`,
+      story2:
+`Nhiệm vụ của người chơi:
+
+• Dùng phím mũi tên hoặc nút mũi tên trên màn hình
+  điều khiển anh Giang chạy quanh sảnh cưới mở.
+• Nhặt lại 5 món đồ đang nằm rải rác dưới sàn.
+• Dí bắt mèo Na để giành lại… cà vạt –
+  trở thành món đồ thứ 6.
+• Khi đủ 6/6, cánh cửa phòng Nhi sẽ mở khóa.
+• Bước vào ô cửa, game sẽ tự động dẫn tiếp:
+  Giang vào “đánh thức” chị Nhi,
+  rồi hai người nắm tay cùng đi ra lễ đường.
+
+Trên đường chạy, bốn em họ tinh nghịch
+— Kitty, Phúc, Sữa và Trúc —
+cứ lảng vảng chắn đường.
+
+Lỡ đụng em nào, game không kết thúc.
+Chỉ là anh Giang nói lời yêu thương cho chị Nhi,
+rồi được em tha và còn được chúc mừng nữa.`,
+      btnStoryNext: "Trang sau",
+      btnStoryStart: "Vào chơi",
+      hudScoreLabel: "Vật phẩm:",
+      hudHint: "Điều khiển bằng phím mũi tên hoặc nút trên màn hình. Né Kitty, Phúc, Sữa & Trúc.",
+      endWin:
+`Khủng hoảng đã được “dọn sạch”.
+
+Giang đã lượm đủ đồ, tìm được Nhi
+và hai người vẫn ung dung bước ra lễ đường.
+
+Nhìn từ ngoài vào thì rất chỉn chu, lãng mạn.
+Nhìn từ bên trong thì là một màn chạy deadline hơi… hài.
+Chắc cũng giống hôn nhân ngoài đời thôi.
+
+Chúc hai bạn một đời đầy chuyện cười nho nhỏ,
+những lần “rơi tùm lum” nhưng vẫn nắm tay nhau
+bước tiếp về phía trước.`,
+      endLose:
+`Thử thách tình yêu tạm hoàn thành.
+
+Giang vẫn đang chạy lăng xăng trong sảnh,
+từ tốn lượm lại từng mẩu kỷ niệm.
+
+Vì dù đồ có rớt bừa bộn cỡ nào,
+cuối cùng anh vẫn quay về chỗ Nhi thôi.`,
+      footer: "Làm bằng cả tấm lòng (và chút hỗn loạn dễ thương) dành cho Giang & Nhi",
+      challengeError: "Viết ít nhất một câu yêu thương cho chị Nhi nha, viết dài lênnnnn ♥",
+      challengeButton: "Gửi",
+      roomLabel: "Phòng của Nhi",
+      ceremonyLabel: "Lễ đường",
+      doorOpenedText: "Cánh cửa vào phòng của Nhi đã mở. Tới giờ gọi cô dâu dậy rồi.",
+      itemBanner: {
+        ring: "Nhẫn cưới",
+        flower: "Hoa cưới",
+        letter: "Thư tình",
+        photo: "Tấm ảnh kỷ niệm",
+        cake: "Miếng bánh cưới",
+        key: "Chìa khóa",
+        naGift: "Cà vạt của anh Giang"
+      },
+      itemStory: {
+        ring: "Không hiểu sao lại lăn đi, may mà kịp lượm trước giờ G.",
+        flower: "Rơi ra khi Giang xoay một vòng hơi… quá đà.",
+        letter: "Bức thư từng làm Nhi cười suốt một buổi.",
+        photo: "Bằng chứng cho một ngày vừa ngố vừa vui.",
+        cake: "Miếng bánh “tự do” trốn khỏi bàn tráng miệng.",
+        key: "Món đồ nhỏ nhưng gánh trách nhiệm to.",
+        naGift: "Na cuối cùng cũng trả lại cà vạt sau một màn rượt đuổi vui vẻ."
+      },
+      howtoTitle: "Hướng dẫn nhanh bằng hình",
+      howtoGiang: "Đây là Giang (người chơi). Di chuyển để lượm đồ.",
+      howtoCousins: "Đây là mấy em họ. Đụng vào là phải nộp “thuế lời yêu”.",
+      howtoNa: "Na – mèo trắng đen. Phải dí bắt mới lấy được món đồ cuối (cà vạt).",
+      howtoItems: "Đồ cưới Giang làm rớt. Nhặt hết cho gọn gàng.",
+      howtoDoor: "Cửa vào phòng Nhi. Chỉ mở khi đủ 6 món.",
+      howtoRoom: "Phòng của Nhi. Cô dâu đang ngủ ở đây.",
+      howtoCeremony: "Lễ đường. Cuối game Giang dắt Nhi ra đây.",
+      howtoControls: "Cách điều khiển: dùng phím mũi tên trên bàn phím, hoặc chạm các nút mũi tên trên màn hình điện thoại."
+    }
+  };
+
+  let currentLang = "en";
+  let storyPage = 1;
+
+  const elements = {
+    title: document.getElementById("title"),
+    subtitle: document.getElementById("subtitle"),
+    startDescription: document.getElementById("start-description"),
+    btnStart: document.getElementById("btn-start"),
+    storyText: document.getElementById("story-text"),
+    btnStoryNext: document.getElementById("btn-story-next"),
+    hudScoreLabel: document.getElementById("hud-score-label"),
+    hudHint: document.getElementById("hud-hint"),
+    hudScore: document.getElementById("hud-score"),
+    hudTarget: document.getElementById("hud-target"),
+    endText: document.getElementById("end-text"),
+    footerText: document.getElementById("footer-text"),
+    btnEn: document.getElementById("btn-en"),
+    btnVi: document.getElementById("btn-vi"),
+    btnAgain: document.getElementById("btn-again"),
+    hintBubble: document.getElementById("hint-bubble"),
+    screens: {
+      start: document.getElementById("start-screen"),
+      story: document.getElementById("story-screen"),
+      game: document.getElementById("game-screen"),
+      end: document.getElementById("end-screen"),
+    },
+    challengeOverlay: document.getElementById("challenge-overlay"),
+    challengeTitle: document.getElementById("challenge-title"),
+    challengeText: document.getElementById("challenge-text"),
+    challengeInput: document.getElementById("challenge-input"),
+    challengeError: document.getElementById("challenge-error"),
+    challengeSubmit: document.getElementById("challenge-submit"),
+    blessingToast: document.getElementById("blessing-toast"),
+    blessingText: document.getElementById("blessing-text"),
+    itemToast: document.getElementById("item-toast"),
+    itemToastIcon: document.getElementById("item-toast-icon"),
+    itemToastText: document.getElementById("item-toast-text"),
+    doorToast: document.getElementById("door-toast"),
+    doorToastText: document.getElementById("door-toast-text"),
+    howtoCard: document.getElementById("howto-card"),
+    howtoTitle: document.getElementById("howto-title"),
+    howtoGiangText: document.getElementById("howto-giang-text"),
+    howtoCousinsText: document.getElementById("howto-cousins-text"),
+    howtoNaText: document.getElementById("howto-na-text"),
+    howtoItemsText: document.getElementById("howto-items-text"),
+    howtoDoorText: document.getElementById("howto-door-text"),
+    howtoRoomText: document.getElementById("howto-room-text"),
+    howtoCeremonyText: document.getElementById("howto-ceremony-text"),
+    howtoControlsText: document.getElementById("howto-controls-text"),
+    touchControls: document.getElementById("touch-controls")
+  };
+
+  let hintTimeout = null;
+
+  function showHintBubble() {
+    elements.hintBubble.style.display = "flex";
+    if (hintTimeout) clearTimeout(hintTimeout);
+    hintTimeout = setTimeout(() => {
+      hideHintBubble();
+    }, 9000);
+  }
+
+  function hideHintBubble() {
+    elements.hintBubble.style.display = "none";
+    if (hintTimeout) clearTimeout(hintTimeout);
+    hintTimeout = null;
+  }
+
+  function applyLang(lang) {
+    currentLang = lang;
+    const s = STRINGS[lang];
+    elements.title.textContent = s.title;
+    elements.subtitle.textContent = s.subtitle;
+    elements.startDescription.textContent = s.startDescription;
+    elements.btnStart.textContent = s.btnPlay;
+    elements.hudScoreLabel.textContent = s.hudScoreLabel;
+    elements.hudHint.textContent = s.hudHint;
+    elements.footerText.textContent = s.footer;
+    elements.challengeSubmit.textContent = s.challengeButton;
+    elements.doorToastText.textContent = s.doorOpenedText;
+
+    if (storyPage === 1) {
+      elements.storyText.textContent = s.story1;
+      elements.btnStoryNext.textContent = s.btnStoryNext;
+      elements.howtoCard.classList.add("hidden");
+    } else {
+      elements.storyText.textContent = s.story2;
+      elements.btnStoryNext.textContent = s.btnStoryStart;
+      elements.howtoCard.classList.remove("hidden");
+    }
+
+    elements.howtoTitle.textContent = s.howtoTitle;
+    elements.howtoGiangText.textContent = s.howtoGiang;
+    elements.howtoCousinsText.textContent = s.howtoCousins;
+    elements.howtoNaText.textContent = s.howtoNa;
+    elements.howtoItemsText.textContent = s.howtoItems;
+    elements.howtoDoorText.textContent = s.howtoDoor;
+    elements.howtoRoomText.textContent = s.howtoRoom;
+    elements.howtoCeremonyText.textContent = s.howtoCeremony;
+    elements.howtoControlsText.textContent = s.howtoControls;
+
+    elements.btnEn.classList.toggle("active", lang === "en");
+    elements.btnVi.classList.toggle("active", lang === "vi");
+  }
+
+  elements.btnEn.addEventListener("click", () => applyLang("en"));
+  elements.btnVi.addEventListener("click", () => applyLang("vi"));
+
+  function showScreen(name) {
+    for (const key in elements.screens) {
+      elements.screens[key].classList.remove("active");
+    }
+    elements.screens[name].classList.add("active");
+  }
+
+  // ---------- Game logic ----------
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  const TILE_SIZE = 32;
+
+  const MAZE_TEMPLATE = [
+    "...................",
+
+    ".P........I........",
+    "...................",
+    "......I............",
+    "...................",
+    ".........I.........",
+    "...................",
+    "...................",
+    "...................",
+    "I..................",
+    "...................",
+    ".......I...........",
+    "................D..",
+    "..............B....",
+    "..................."
+  ];
+
+  const ROWS = MAZE_TEMPLATE.length;
+  const COLS = MAZE_TEMPLATE[0].length;
+
+  canvas.width = COLS * TILE_SIZE;
+  canvas.height = ROWS * TILE_SIZE;
+
+  let maze = [];
+  let itemTypes = [];
+  let totalItems = 0;
+  let collectedCount = 0;
+  let mapItemsTotal = 0;
+
+  let startRow = 0;
+  let startCol = 0;
+  let doorRow = 0;
+  let doorCol = 0;
+  let nhiRow = 0;
+  let nhiCol = 0;
+
+  const altarRow = 2;
+  const altarCol = 16;
+
+  const player = {
+    row: 0,
+    col: 0,
+    color: "#273b5b"
+  };
+
+  const enemies = [
+    {
+      key: "kitty",
+      name: "Kitty",
+      row: 2, col: 14,
+      color: "#ff6b81",
+      icon: "cat",
+      request: {
+        en: `Kitty says:\n“Type a sweet line to Nhi starting with ‘Dear Nhi,’”`,
+        vi: `Kitty nói:\n“Viết một câu ngọt ngào cho Nhi, bắt đầu bằng ‘Gửi Nhi,’ nha.”`
+      },
+      blessing: {
+        en: "Kitty wishes you two stay playful and cute forever!",
+        vi: "Kitty chúc hai anh chị lúc nào cũng thật nhiều niềm dui"
+      }
+    },
+    {
+      key: "phuc",
+      name: "Phúc",
+      row: 8, col: 3,
+      color: "#4dabf7",
+      icon: "tie",
+      request: {
+        en: `Phúc says:\n“Promise one thing you will always do to take care of Nhi.”`,
+        vi: `Phúc nói:\n“Hứa một điều anh sẽ luôn làm để chăm sóc Nhi đi ạ.”`
+      },
+      blessing: {
+        en: "Phúc wishes you both a strong, steady and warm home.",
+        vi: "Phúc chúc hai anh chị có một mái nhà vững chãi và ấm áp."
+      }
+    },
+    {
+      key: "sua",
+      name: "Sữa",
+      row: 10, col: 15,
+      color: "#fce38a",
+      icon: "milk",
+      request: {
+        en: `Sữa says:\n“Describe one cozy moment you love the most with Nhi.”`,
+        vi: `Sữa nói:\n“Kể một khoảnh khắc ấm áp anh thích nhất khi ở bên Nhi nha.”`
+      },
+      blessing: {
+        en: "Sữa wishes your days are as soft and sweet as warm milk.",
+        vi: "Sữa chúc mỗi ngày của hai anh chị đều thât nhiều ý nghĩa."
+      }
+    },
+    {
+      key: "truc",
+      name: "Trúc",
+      row: 6, col: 10,
+      color: "#9b5de5",
+      icon: "leaf",
+      request: {
+        en: `Trúc says:\n“Write a short wish for your future with Nhi.”`,
+        vi: `Trúc nói:\n“Viết một lời chúc ngắn cho tương lai của anh và Nhi đi ạ.”`
+      },
+      blessing: {
+        en: "Trúc wishes your love keeps growing green and steady.",
+        vi: "Trúc chúc tình yêu của anh Giang chị Nhi lúc nào cũng rần rần."
+      }
+    }
+  ];
+
+  const catNa = {
+    row: 4,
+    col: 6,
+    hasItem: true
+  };
+
+  let doorOpen = false;
+  let pendingMove = null;
+  let gameRunning = false;
+  let gameWon = false;
+  let gameInterval = null;
+
+  let inChallenge = false;
+  let currentCousin = null;
+  let blessingTimeout = null;
+  let itemToastTimeout = null;
+  let doorToastTimeout = null;
+  let tickCount = 0;
+
+  // --- SPEED CONFIG (tăng tốc độ cousins & Na) ---
+  const GAME_TICK_MS = 120;      // toàn game chạy nhanh hơn (ms mỗi tick)
+  const COUSIN_STEP_DELAY = 1;   // cousins di chuyển mỗi tick
+  const NA_STEP_DELAY = 2;       // Na di chuyển mỗi 2 tick (nhanh hơn trước)
+
+  const ITEM_META = {
+    ring:   { icon: "💍" },
+    flower: { icon: "💐" },
+    letter: { icon: "💌" },
+    photo:  { icon: "📷" },
+    cake:   { icon: "🎂" },
+    key:    { icon: "🔑" },
+    naGift: { icon: "👔" }
+  };
+
+  let gamePhase = "play";
+  let escortPath = [];
+  let escortIndex = 0;
+  let brideJoined = false;
+
+  function resetMaze() {
+    maze = [];
+    itemTypes = [];
+    doorOpen = false;
+    tickCount = 0;
+    gamePhase = "play";
+    brideJoined = false;
+
+    mapItemsTotal = 0;
+
+    const itemTypeSequence = ["ring", "flower", "letter", "photo", "cake"];
+    let itemIndex = 0;
+
+    for (let r = 0; r < ROWS; r++) {
+      const rowStr = MAZE_TEMPLATE[r];
+      const rowArr = [];
+      const typeRow = [];
+      for (let c = 0; c < COLS; c++) {
+        let ch = rowStr[c];
+        if (ch === "P") {
+          player.row = r;
+          player.col = c;
+          startRow = r;
+          startCol = c;
+          rowArr.push(".");
+          typeRow.push(null);
+        } else if (ch === "I") {
+          mapItemsTotal++;
+          const t = itemTypeSequence[itemIndex % itemTypeSequence.length];
+          itemIndex++;
+          rowArr.push("I");
+          typeRow.push(t);
+        } else if (ch === "D") {
+          doorRow = r;
+          doorCol = c;
+          rowArr.push("D");
+          typeRow.push(null);
+        } else if (ch === "B") {
+          nhiRow = r;
+          nhiCol = c;
+          rowArr.push("B");
+          typeRow.push(null);
+        } else {
+          rowArr.push(ch);
+          typeRow.push(null);
+        }
+      }
+      maze.push(rowArr);
+      itemTypes.push(typeRow);
+    }
+
+    totalItems = mapItemsTotal + 1; // +1 từ Na
+    collectedCount = 0;
+
+    enemies[0].row = 2;  enemies[0].col = 14;
+    enemies[1].row = 8;  enemies[1].col = 3;
+    enemies[2].row = 10; enemies[2].col = 15;
+    enemies[3].row = 6;  enemies[3].col = 10;
+
+    catNa.row = 4;
+    catNa.col = 6;
+    catNa.hasItem = true;
+
+    pendingMove = null;
+    gameWon = false;
+    inChallenge = false;
+    currentCousin = null;
+    elements.challengeOverlay.style.display = "none";
+    elements.challengeInput.value = "";
+    elements.challengeError.textContent = "";
+    hideBlessing();
+    hideItemToast();
+    hideDoorToast();
+    hideHintBubble();
+
+    elements.hudScore.textContent = collectedCount;
+    elements.hudTarget.textContent = totalItems;
+  }
+
+  function inBounds(r, c) {
+    return r >= 0 && r < ROWS && c >= 0 && c < COLS;
+  }
+
+  function isBlockedCell(r, c) {
+    if (!inBounds(r, c)) return true;
+    const ch = maze[r][c];
+    if (!doorOpen) {
+      // chặn vùng phòng Nhi + cửa khi chưa mở
+      if (r >= nhiRow - 1 && r <= nhiRow + 1 &&
+          c >= nhiCol - 1 && c <= nhiCol + 1) {
+        return true;
+      }
+      if (ch === "D") return true;
+    }
+    return false;
+  }
+
+  function handleInputKey(key) {
+    if (inChallenge) return;
+    let move = null;
+    if (key === "ArrowUp")    move = { dr: -1, dc: 0 };
+    else if (key === "ArrowDown")  move = { dr: 1, dc: 0 };
+    else if (key === "ArrowLeft")  move = { dr: 0, dc: -1 };
+    else if (key === "ArrowRight") move = { dr: 0, dc: 1 };
+
+    if (move && gamePhase === "play") {
+      pendingMove = move;
+      hideHintBubble();
+    }
+  }
+
+  window.addEventListener("keydown", (e) => {
+    handleInputKey(e.key);
+  });
+
+  // Touch controls (smartphone D-pad)
+  if (elements.touchControls) {
+    const buttons = elements.touchControls.querySelectorAll(".tc-btn");
+    buttons.forEach(btn => {
+      const dir = btn.dataset.dir;
+      const keyMap = {
+        up: "ArrowUp",
+        down: "ArrowDown",
+        left: "ArrowLeft",
+        right: "ArrowRight"
+      };
+      const key = keyMap[dir];
+
+      const triggerMove = (e) => {
+        e.preventDefault();
+        handleInputKey(key);
+      };
+
+      btn.addEventListener("touchstart", triggerMove, { passive: false });
+      btn.addEventListener("click", triggerMove);
+    });
+  }
+
+  function updatePlayer() {
+    if (!pendingMove) return;
+
+    const nr = player.row + pendingMove.dr;
+    const nc = player.col + pendingMove.dc;
+    if (!isBlockedCell(nr, nc)) {
+      player.row = nr;
+      player.col = nc;
+
+      const ch = maze[nr][nc];
+
+      if (ch === "I") {
+        const t = itemTypes[nr][nc];
+        maze[nr][nc] = ".";
+        itemTypes[nr][nc] = null;
+        collectedCount++;
+        elements.hudScore.textContent = collectedCount;
+        showItemToast(t, collectedCount, totalItems);
+        if (collectedCount >= totalItems) {
+          doorOpen = true;
+          showDoorToast();
+        }
+      }
+
+      if (ch === "D" && doorOpen && gamePhase === "play") {
+        startEscortToNhi();
+      }
+    }
+
+    pendingMove = null;
+  }
+
+  function validStepForActor(r, c) {
+    return !isBlockedCell(r, c);
+  }
+
+  function updateEnemies() {
+    if (gamePhase !== "play") return;
+    if (tickCount % COUSIN_STEP_DELAY !== 0) return; // speed control
+
+    enemies.forEach(e => {
+      const dirsBase = [
+        { dr: -1, dc: 0 },
+        { dr: 1, dc: 0 },
+        { dr: 0, dc: -1 },
+        { dr: 0, dc: 1 },
+        { dr: 0, dc: 0 }
+      ];
+
+      const chaseDirs = [];
+      const dr = player.row - e.row;
+      const dc = player.col - e.col;
+      if (Math.abs(dr) > Math.abs(dc)) {
+        if (dr < 0) chaseDirs.push({ dr: -1, dc: 0 });
+        if (dr > 0) chaseDirs.push({ dr: 1, dc: 0 });
+        if (dc < 0) chaseDirs.push({ dr: 0, dc: -1 });
+        if (dc > 0) chaseDirs.push({ dr: 0, dc: 1 });
+      } else {
+        if (dc < 0) chaseDirs.push({ dr: 0, dc: -1 });
+        if (dc > 0) chaseDirs.push({ dr: 0, dc: 1 });
+        if (dr < 0) chaseDirs.push({ dr: -1, dc: 0 });
+        if (dr > 0) chaseDirs.push({ dr: 1, dc: 0 });
+      }
+
+      let dirs;
+      if (Math.random() < 0.5 && chaseDirs.length) {
+        dirs = chaseDirs.concat(dirsBase);
+      } else {
+        dirs = dirsBase;
+      }
+
+      for (let i = dirs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [dirs[i], dirs[j]] = [dirs[j], dirs[i]];
+      }
+
+      const options = dirs.filter(d => validStepForActor(e.row + d.dr, e.col + d.dc));
+      if (options.length > 0) {
+        const choice = options[Math.floor(Math.random() * options.length)];
+        e.row += choice.dr;
+        e.col += choice.dc;
+      }
+    });
+  }
+
+  function updateCatNa() {
+    if (gamePhase !== "play") return;
+    if (!catNa.hasItem) return;
+
+    if (tickCount % NA_STEP_DELAY !== 0) return; // speed control for Na
+
+    const dirs = [
+      { dr: -1, dc: 0 },
+      { dr: 1, dc: 0 },
+      { dr: 0, dc: -1 },
+      { dr: 0, dc: 1 },
+      { dr: 0, dc: 0 }
+    ];
+
+    let best = { dr: 0, dc: 0, dist: -1 };
+    dirs.forEach(d => {
+      const nr = catNa.row + d.dr;
+      const nc = catNa.col + d.dc;
+      if (!validStepForActor(nr, nc)) return;
+      const dist = (player.row - nr) ** 2 + (player.col - nc) ** 2;
+      if (dist > best.dist) {
+        best = { dr: d.dr, dc: d.dc, dist };
+      }
+    });
+
+    let move;
+    if (Math.random() < 0.7 && best.dist >= 0) {
+      move = best;
+    } else {
+      const options = dirs.filter(d => validStepForActor(catNa.row + d.dr, catNa.col + d.dc));
+      move = options[Math.floor(Math.random() * options.length)] || { dr: 0, dc: 0 };
+    }
+
+    catNa.row += move.dr;
+    catNa.col += move.dc;
+  }
+
+  function showChallenge(cousin) {
+    inChallenge = true;
+    currentCousin = cousin;
+    const s = STRINGS[currentLang];
+
+    elements.challengeTitle.textContent = cousin.name;
+    elements.challengeText.textContent =
+      currentLang === "en" ? cousin.request.en : cousin.request.vi;
+    elements.challengeInput.value = "";
+    elements.challengeError.textContent = "";
+    elements.challengeOverlay.style.display = "flex";
+    elements.challengeInput.focus();
+  }
+
+  function hideChallenge() {
+    inChallenge = false;
+    elements.challengeOverlay.style.display = "none";
+  }
+
+  function showBlessing(cousin) {
+    const text = currentLang === "en" ? cousin.blessing.en : cousin.blessing.vi;
+    elements.blessingText.textContent = text;
+    elements.blessingToast.style.display = "flex";
+    if (blessingTimeout) clearTimeout(blessingTimeout);
+    blessingTimeout = setTimeout(() => {
+      hideBlessing();
+    }, 4500);
+  }
+
+  function hideBlessing() {
+    elements.blessingToast.style.display = "none";
+  }
+
+  function showDoorToast() {
+    elements.doorToast.style.display = "flex";
+    if (doorToastTimeout) clearTimeout(doorToastTimeout);
+    doorToastTimeout = setTimeout(() => {
+      hideDoorToast();
+    }, 3500);
+  }
+
+  function hideDoorToast() {
+    elements.doorToast.style.display = "none";
+  }
+
+  function showItemToast(type, collected, total) {
+    const s = STRINGS[currentLang];
+    const meta = ITEM_META[type] || { icon: "❤️" };
+    const label = (s.itemBanner && s.itemBanner[type]) || "Item";
+    const story = (s.itemStory && s.itemStory[type]) || "";
+
+    elements.itemToastIcon.textContent = meta.icon;
+    elements.itemToastText.textContent = story
+      ? `${label} (${collected} / ${total}) — ${story}`
+      : `${label} (${collected} / ${total})`;
+    elements.itemToast.style.display = "flex";
+
+    if (itemToastTimeout) clearTimeout(itemToastTimeout);
+    itemToastTimeout = setTimeout(() => {
+      hideItemToast();
+    }, 2800);
+  }
+
+  function hideItemToast() {
+    elements.itemToast.style.display = "none";
+  }
+
+  function checkCollisions() {
+    if (inChallenge || gamePhase !== "play") return;
+
+    for (const e of enemies) {
+      if (e.row === player.row && e.col === player.col) {
+        showChallenge(e);
+        return;
+      }
+    }
+
+    if (catNa.hasItem && catNa.row === player.row && catNa.col === player.col) {
+      catNa.hasItem = false;
+      collectedCount++;
+      elements.hudScore.textContent = collectedCount;
+      showItemToast("naGift", collectedCount, totalItems);
+      if (collectedCount >= totalItems) {
+        doorOpen = true;
+        showDoorToast();
+      }
+    }
+  }
+
+  function roundedRectPath(ctx, x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  function drawMaze() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const s = STRINGS[currentLang];
+
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    gradient.addColorStop(0, "#ffeef7");
+    gradient.addColorStop(1, "#fff7ff");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    (function drawCeremony() {
+      const x = altarCol * TILE_SIZE - TILE_SIZE * 2;
+      const y = altarRow * TILE_SIZE - TILE_SIZE;
+      const w = TILE_SIZE * 4;
+      const h = TILE_SIZE * 3;
+
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      roundedRectPath(ctx, x, y, w, h, 12);
+      ctx.fill();
+
+      ctx.strokeStyle = "#ffb6d1";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x + w / 2, y + TILE_SIZE, TILE_SIZE, Math.PI, 0);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ff5b8a";
+      for (let i = 0; i < 5; i++) {
+        const angle = Math.PI + (Math.PI / 4) * i;
+        ctx.beginPath();
+        ctx.arc(
+          x + w / 2 + Math.cos(angle) * TILE_SIZE,
+          y + TILE_SIZE + Math.sin(angle) * TILE_SIZE * 0.6,
+          4,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+      }
+
+      ctx.fillStyle = "#ffe5f0";
+      ctx.fillRect(x + 6, y + h - 18, 24, 10);
+      ctx.fillRect(x + w - 30, y + h - 18, 24, 10);
+
+      ctx.fillStyle = "#ff5b8a";
+      ctx.font = "11px Quicksand";
+      ctx.textBaseline = "top";
+      ctx.textAlign = "center";
+      ctx.fillText(s.ceremonyLabel, x + w / 2, y + 4);
+      ctx.textAlign = "left";
+    })();
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = c * TILE_SIZE;
+        const y = r * TILE_SIZE;
+        const ch = maze[r][c];
+
+        if (ch === "I") {
+          const t = itemTypes[r][c];
+          const cx = x + TILE_SIZE / 2;
+          const cy = y + TILE_SIZE / 2;
+          const R = TILE_SIZE * 0.24;
+
+          ctx.fillStyle = "#ffe5f0";
+          ctx.beginPath();
+          ctx.arc(cx, cy, R + 3, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (t === "ring") {
+            ctx.strokeStyle = "#ffb400";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, R - 4, 0, Math.PI * 2);
+            ctx.stroke();
+          } else if (t === "flower") {
+            ctx.fillStyle = "#ff5b8a";
+            for (let i = 0; i < 5; i++) {
+              const angle = (Math.PI * 2 / 5) * i;
+              ctx.beginPath();
+              ctx.arc(
+                cx + Math.cos(angle) * (R - 6),
+                cy + Math.sin(angle) * (R - 6),
+                4,
+                0,
+                Math.PI * 2
+              );
+              ctx.fill();
+            }
+            ctx.fillStyle = "#ffd1e1";
+            ctx.beginPath();
+            ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (t === "letter") {
+            ctx.fillStyle = "#fff";
+            ctx.strokeStyle = "#ff5b8a";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(cx - 10, cy - 7, 20, 14);
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx - 10, cy - 7);
+            ctx.lineTo(cx, cy + 1);
+            ctx.lineTo(cx + 10, cy - 7);
+            ctx.stroke();
+          } else if (t === "photo") {
+            ctx.fillStyle = "#fff";
+            ctx.strokeStyle = "#b0b0b0";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.rect(cx - 10, cy - 10, 20, 20);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = "#a5d8ff";
+            ctx.fillRect(cx - 8, cy - 8, 16, 8);
+            ctx.fillStyle = "#ffbccc";
+            ctx.fillRect(cx - 8, cy, 16, 8);
+          } else if (t === "cake") {
+            ctx.fillStyle = "#ffe5f0";
+            ctx.fillRect(cx - 10, cy + 2, 20, 6);
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(cx - 8, cy - 4, 16, 6);
+            ctx.fillStyle = "#ff5b8a";
+            ctx.beginPath();
+            ctx.arc(cx, cy - 6, 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else if (t === "key") {
+            ctx.strokeStyle = "#ffb400";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(cx - 4, cy, 4, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + 8, cy);
+            ctx.moveTo(cx + 6, cy - 2);
+            ctx.lineTo(cx + 6, cy + 2);
+            ctx.stroke();
+          }
+        } else if (ch === "D") {
+          if (doorOpen) {
+            const pulse = 0.3 + 0.2 * Math.sin(Date.now() / 180);
+            ctx.fillStyle = `rgba(195,240,202,${0.7 + pulse})`;
+          } else {
+            ctx.fillStyle = "#cdd6f4";
+          }
+          roundedRectPath(ctx, x + 6, y + 6, TILE_SIZE - 12, TILE_SIZE - 12, 8);
+          ctx.fill();
+        } else if (ch === "B") {
+          ctx.fillStyle = "#ffe9fb";
+          ctx.fillRect(x - TILE_SIZE, y - TILE_SIZE, TILE_SIZE * 3, TILE_SIZE * 3);
+
+          ctx.strokeStyle = "#ffb6d1";
+          ctx.lineWidth = 2;
+          roundedRectPath(ctx, x - TILE_SIZE + 4, y - TILE_SIZE + 4, TILE_SIZE * 3 - 8, TILE_SIZE * 3 - 8, 10);
+          ctx.stroke();
+
+          const bedX = x - TILE_SIZE + 10;
+          const bedY = y + 6;
+          ctx.fillStyle = "#fff";
+          roundedRectPath(ctx, bedX, bedY, TILE_SIZE * 2.2, TILE_SIZE * 0.9, 8);
+          ctx.fill();
+          ctx.fillStyle = "#ffb6d1";
+          ctx.fillRect(bedX, bedY + TILE_SIZE * 0.5, TILE_SIZE * 2.2, 4);
+
+          if (!brideJoined) {
+            const bx = x + TILE_SIZE / 2 + 8;
+            const by = y + TILE_SIZE / 2;
+            ctx.fillStyle = "#f4c9a4";
+            ctx.beginPath();
+            ctx.arc(bx, by - 10, TILE_SIZE * 0.22, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ffbccc";
+            ctx.beginPath();
+            ctx.moveTo(bx - 10, by);
+            ctx.lineTo(bx + 10, by);
+            ctx.lineTo(bx, by + 16);
+            ctx.closePath();
+            ctx.fill();
+          }
+
+          ctx.fillStyle = "#ff5b8a";
+          ctx.font = "11px Quicksand";
+          ctx.textBaseline = "top";
+          const label = s.roomLabel;
+          const tw = ctx.measureText(label).width;
+          ctx.fillText(label, x - TILE_SIZE + (TILE_SIZE * 3 - tw) / 2, y - TILE_SIZE + 6);
+        }
+      }
+    }
+  }
+
+  function drawPlayerAndBride() {
+    const x = player.col * TILE_SIZE + TILE_SIZE / 2;
+    const y = player.row * TILE_SIZE + TILE_SIZE / 2;
+
+    if (brideJoined) {
+      const nx = x + 10;
+      const ny = y;
+      ctx.fillStyle = "#f4c9a4";
+      ctx.beginPath();
+      ctx.arc(nx, ny - 8, TILE_SIZE * 0.22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffbccc";
+      ctx.beginPath();
+      ctx.moveTo(nx - 6, ny + 2);
+      ctx.lineTo(nx + 6, ny + 2);
+      ctx.lineTo(nx, ny + 14);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.fillStyle = player.color;
+    ctx.beginPath();
+    ctx.arc(x, y + 4, TILE_SIZE * 0.26, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#f4c9a4";
+    ctx.beginPath();
+    ctx.arc(x, y - 8, TILE_SIZE * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ff5b8a";
+    ctx.beginPath();
+    ctx.moveTo(x - 6, y);
+    ctx.lineTo(x, y - 4);
+    ctx.lineTo(x + 6, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function drawEnemies() {
+    ctx.font = "10px Quicksand";
+    ctx.textBaseline = "top";
+
+    enemies.forEach(e => {
+      const x = e.col * TILE_SIZE + TILE_SIZE / 2;
+      const y = e.row * TILE_SIZE + TILE_SIZE / 2;
+
+      ctx.fillStyle = e.color;
+      ctx.beginPath();
+      ctx.arc(x, y, TILE_SIZE * 0.25, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#fff";
+      ctx.beginPath();
+      ctx.arc(x - 4, y - 3, 3, 0, Math.PI * 2);
+      ctx.arc(x + 4, y - 3, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#333";
+      ctx.beginPath();
+      ctx.arc(x - 4, y - 3, 1.5, 0, Math.PI * 2);
+      ctx.arc(x + 4, y - 3, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(x, y + 2);
+      if (e.icon === "cat") {
+        ctx.fillStyle = "#ffb6d1";
+        ctx.beginPath();
+        ctx.moveTo(-6, -12);
+        ctx.lineTo(-1, -6);
+        ctx.lineTo(-8, -4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(6, -12);
+        ctx.lineTo(1, -6);
+        ctx.lineTo(8, -4);
+        ctx.closePath();
+        ctx.fill();
+      } else if (e.icon === "tie") {
+        ctx.fillStyle = "#1c7ed6";
+        ctx.beginPath();
+        ctx.moveTo(0, -4);
+        ctx.lineTo(-3, 4);
+        ctx.lineTo(0, 8);
+        ctx.lineTo(3, 4);
+        ctx.closePath();
+        ctx.fill();
+      } else if (e.icon === "milk") {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.moveTo(0, -6);
+        ctx.bezierCurveTo(4, -2, 4, 4, 0, 8);
+        ctx.bezierCurveTo(-4, 4, -4, -2, 0, -6);
+        ctx.fill();
+      } else if (e.icon === "leaf") {
+        ctx.fillStyle = "#51cf66";
+        ctx.beginPath();
+        ctx.moveTo(0, -8);
+        ctx.bezierCurveTo(6, -4, 6, 4, 0, 8);
+        ctx.bezierCurveTo(-6, 4, -6, -4, 0, -8);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      const name = e.name;
+      const metrics = ctx.measureText(name);
+      const tw = metrics.width;
+      ctx.fillStyle = "#555";
+      ctx.fillText(name, x - tw / 2, y + TILE_SIZE * 0.25 + 2);
+    });
+  }
+
+  function drawCatNa() {
+    if (!catNa.hasItem && gamePhase !== "play") return;
+    const x = catNa.col * TILE_SIZE + TILE_SIZE / 2;
+    const y = catNa.row * TILE_SIZE + TILE_SIZE / 2;
+
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(x, y, TILE_SIZE * 0.22, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#333";
+    ctx.beginPath();
+    ctx.arc(x - 4, y - 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(x - 6, y - 10);
+    ctx.lineTo(x - 2, y - 4);
+    ctx.lineTo(x - 8, y - 4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(x + 2, y - 10);
+    ctx.lineTo(x + 6, y - 4);
+    ctx.lineTo(x, y - 4);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(x - 1, y - 1, 1.5, 0, Math.PI * 2);
+    ctx.arc(x + 3, y - 1, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#333";
+    ctx.beginPath();
+    ctx.arc(x - 1, y - 1, 0.8, 0, Math.PI * 2);
+    ctx.arc(x + 3, y - 1, 0.8, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+    ctx.font = "10px Quicksand";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "#555";
+    const name = "Na";
+    const tw = ctx.measureText(name).width;
+    ctx.fillText(name, x - tw / 2, y + TILE_SIZE * 0.22 + 2);
+  }
+
+  function draw() {
+    drawMaze();
+    drawPlayerAndBride();
+    drawEnemies();
+    if (catNa.hasItem) drawCatNa();
+  }
+
+  function update() {
+    tickCount++;
+
+    if (gamePhase === "play") {
+      updatePlayer();
+      updateEnemies();
+      updateCatNa();
+      checkCollisions();
+    } else if (gamePhase === "escortToNhi") {
+      stepEscortToNhi();
+    } else if (gamePhase === "escortToAltar") {
+      stepEscortToAltar();
+    }
+
+    draw();
+  }
+
+  function startEscortToNhi() {
+    gamePhase = "escortToNhi";
+    escortPath = [];
+    escortIndex = 0;
+
+    let r = player.row;
+    let c = player.col;
+    while (c !== nhiCol) {
+      c += (nhiCol > c ? 1 : -1);
+      escortPath.push({ r, c });
+    }
+    while (r !== nhiRow) {
+      r += (nhiRow > r ? 1 : -1);
+      escortPath.push({ r, c });
+    }
+  }
+
+  function startEscortToAltar() {
+    gamePhase = "escortToAltar";
+    escortPath = [];
+    escortIndex = 0;
+
+    let r = nhiRow;
+    let c = nhiCol;
+    while (c !== altarCol) {
+      c += (altarCol > c ? 1 : -1);
+      escortPath.push({ r, c });
+    }
+    while (r !== altarRow) {
+      r += (altarRow > r ? 1 : -1);
+      escortPath.push({ r, c });
+    }
+  }
+
+  function stepEscortToNhi() {
+    if (escortIndex < escortPath.length) {
+      const step = escortPath[escortIndex];
+      player.row = step.r;
+      player.col = step.c;
+      escortIndex++;
+      if (player.row === nhiRow && player.col === nhiCol) {
+        brideJoined = true;
+        startEscortToAltar();
+      }
+    } else {
+      brideJoined = true;
+      startEscortToAltar();
+    }
+  }
+
+  function stepEscortToAltar() {
+    if (escortIndex < escortPath.length) {
+      const step = escortPath[escortIndex];
+      player.row = step.r;
+      player.col = step.c;
+      escortIndex++;
+    } else {
+      gameWon = true;
+      endGame();
+    }
+  }
+
+  function startGame() {
+    resetMaze();
+    showScreen("game");
+    gameRunning = true;
+
+    showHintBubble();
+
+    if (gameInterval) clearInterval(gameInterval);
+    gameInterval = setInterval(() => {
+      if (!gameRunning) return;
+      if (inChallenge) {
+        draw();
+        return;
+      }
+      update();
+    }, GAME_TICK_MS);
+
+    draw();
+  }
+
+  function endGame() {
+    gameRunning = false;
+    if (gameInterval) clearInterval(gameInterval);
+
+    const s = STRINGS[currentLang];
+    elements.endText.textContent = gameWon ? s.endWin : s.endLose;
+    showScreen("end");
+  }
+
+  // ---------- Legend mini-icons (canvas) ----------
+  function drawLegendIcons() {
+    const icons = document.querySelectorAll(".legend-icon");
+    icons.forEach(cv => {
+      const ctx = cv.getContext("2d");
+      const w = cv.width;
+      const h = cv.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const type = cv.dataset.icon;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      if (type === "player") {
+        ctx.fillStyle = "#273b5b";
+        ctx.beginPath();
+        ctx.arc(cx, cy + 3, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#f4c9a4";
+        ctx.beginPath();
+        ctx.arc(cx, cy - 4, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ff5b8a";
+        ctx.beginPath();
+        ctx.moveTo(cx - 4, cy + 1);
+        ctx.lineTo(cx, cy - 1);
+        ctx.lineTo(cx + 4, cy + 1);
+        ctx.closePath();
+        ctx.fill();
+      } else if (type === "cousin") {
+        ctx.fillStyle = "#ff6b81";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(cx - 3, cy - 2, 2.3, 0, Math.PI * 2);
+        ctx.arc(cx + 3, cy - 2, 2.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#333";
+        ctx.beginPath();
+        ctx.arc(cx - 3, cy - 2, 1.2, 0, Math.PI * 2);
+        ctx.arc(cx + 3, cy - 2, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === "na") {
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.arc(cx, cy + 1, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#333";
+        ctx.beginPath();
+        ctx.arc(cx - 3, cy - 1, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx - 5, cy - 9);
+        ctx.lineTo(cx - 1, cy - 3);
+        ctx.lineTo(cx - 7, cy - 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(cx + 1, cy - 9);
+        ctx.lineTo(cx + 5, cy - 3);
+        ctx.lineTo(cx - 1, cy - 3);
+        ctx.closePath();
+        ctx.fill();
+      } else if (type === "item") {
+        ctx.fillStyle = "#ffe5f0";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#ff5b8a";
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (type === "door") {
+        ctx.fillStyle = "#cdd6f4";
+        const pad = 4;
+        const x = pad;
+        const y = pad;
+        const w2 = w - pad * 2;
+        const h2 = h - pad * 2;
+        ctx.beginPath();
+        const r = 5;
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w2 - r, y);
+        ctx.quadraticCurveTo(x + w2, y, x + w2, y + r);
+        ctx.lineTo(x + w2, y + h2 - r);
+        ctx.quadraticCurveTo(x + w2, y + h2, x + w2 - r, y + h2);
+        ctx.lineTo(x + r, y + h2);
+        ctx.quadraticCurveTo(x, y + h2, x, y + h2 - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+        ctx.fill();
+      } else if (type === "room") {
+        ctx.fillStyle = "#ffe9fb";
+        ctx.fillRect(2, 2, w - 4, h - 4);
+        ctx.strokeStyle = "#ffb6d1";
+        ctx.lineWidth = 1.3;
+        ctx.strokeRect(2.5, 2.5, w - 5, h - 5);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(4, h - 8, w - 8, 4);
+        ctx.fillStyle = "#ffb6d1";
+        ctx.fillRect(4, h - 10, w - 8, 2);
+      } else if (type === "ceremony") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(3, 8, w - 6, h - 11);
+        ctx.strokeStyle = "#ffb6d1";
+        ctx.lineWidth = 1.3;
+        ctx.strokeRect(3.5, 8.5, w - 7, h - 12);
+        ctx.beginPath();
+        ctx.arc(w / 2, 8, (w - 8) / 2, Math.PI, 0);
+        ctx.stroke();
+      } else if (type === "controls") {
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#d0d0d0";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(w / 2 - 4, 3, 8, 6);
+        ctx.strokeRect(3, h - 9, 8, 6);
+        ctx.strokeRect(w / 2 - 4, h - 9, 8, 6);
+        ctx.strokeRect(w - 11, h - 9, 8, 6);
+      }
+    });
+  }
+
+  // ---------- Buttons ----------
+  elements.btnStart.addEventListener("click", () => {
+    storyPage = 1;
+    const s = STRINGS[currentLang];
+    elements.storyText.textContent = s.story1;
+    elements.btnStoryNext.textContent = s.btnStoryNext;
+    elements.howtoCard.classList.add("hidden");
+    showScreen("story");
+  });
+
+  elements.btnStoryNext.addEventListener("click", () => {
+    const s = STRINGS[currentLang];
+    if (storyPage === 1) {
+      storyPage = 2;
+      elements.storyText.textContent = s.story2;
+      elements.btnStoryNext.textContent = s.btnStoryStart;
+      elements.howtoCard.classList.remove("hidden");
+    } else {
+      startGame();
+    }
+  });
+
+  elements.btnAgain.addEventListener("click", () => {
+    showScreen("start");
+  });
+
+  elements.challengeSubmit.addEventListener("click", () => {
+    const value = elements.challengeInput.value.trim();
+    const s = STRINGS[currentLang];
+
+    if (value.length < 8) {
+      elements.challengeError.textContent = s.challengeError;
+      return;
+    }
+
+    elements.challengeError.textContent = "";
+    const cousin = currentCousin;
+    hideChallenge();
+
+    // Đưa Giang về vị trí an toàn
+    player.row = startRow;
+    player.col = startCol;
+    pendingMove = null;
+
+    if (cousin) showBlessing(cousin);
+    draw();
+  });
+
+  // Init
+  applyLang("en");
+  drawLegendIcons();
+</script>
+</body>
+</html>
